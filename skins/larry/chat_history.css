@@ -1,0 +1,61 @@
+#taskbar a.button-chat_history span.button-inner
+{
+	background: url(chat_history.png) 0 -3px no-repeat;
+}
+#taskbar a.button-chat_history.button-selected span.button-inner,
+#taskbar a.button-chat_history:hover span.button-inner {
+	background: url(chat_history.png) 0 -34px no-repeat;
+}
+#chathistory-left {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 220px;
+	bottom: 0;
+	z-index: 2;
+}
+#contactlistcontainer {
+	position: absolute;
+	top: 267px;
+	left: 0;
+	width: 100%;
+	bottom: 0;
+}
+#chathistory-right {
+	position: absolute;
+	top: 0;
+	left: 232px;
+	right: 0;
+	bottom: 0;
+	z-index: 3;
+}
+#chathistory-top {
+	position: absolute;
+	top: 42px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+}
+#contactlist-content {
+	bottom: 0;
+}
+#chathistory-left #datepicker {
+	margin-top: 5px;
+}
+#chathistorymessages {
+	table-layout: auto;
+}
+#chathistorymessages td {
+	padding: 5px;
+	white-space: normal;
+	vertical-align: top;
+}
+#chathistorymessages td.direction-0 {
+	padding: 10px;
+	background: url('chat_history.png') -14px -59px no-repeat;
+}
+#chathistorymessages td.direction-1 {
+	width: 10px;
+	background: url('chat_history.png') 1px -59px no-repeat;
+}
