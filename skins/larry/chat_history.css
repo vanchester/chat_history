@@ -41,7 +41,9 @@
 	bottom: 0;
 }
 #chathistory-left #datepicker {
-	margin-top: 5px;
+	margin-top: 41px;
+	position: relative;
+	top: auto;
 }
 #chathistorymessages {
 	table-layout: auto;
