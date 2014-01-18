@@ -178,20 +178,23 @@ class chat_history extends rcube_plugin
 		$prefs = $this->rc->user->get_prefs();
 		$messagesQuery = $this->get_dbh()->query(
 			"SELECT
-				r.id, r.direction, r.utc, CONCAT(u.nick, ' ', r.jid) name, r.body
+				r.id, r.direction, r.utc, r.utc2, CONCAT(u.nick, ' ', r.jid) name, r.body
 			FROM (
 				SELECT
 					m.id, m.dir direction,
-					CONVERT_TZ(m.utc, 'GMT', ?) utc, CONCAT(a.with_user, '@', a.with_server) jid, m.body
+					CONVERT_TZ(m.utc, 'GMT', ?) utc, m.utc utc2, CONCAT(a.with_user, '@', a.with_server) jid, m.body
 				FROM " . self::TABLE_MESSAGES . " m
 				JOIN " . self::TABLE_ARCHIVE . " a ON a.id = m.coll_id
 				WHERE a.us = ?
 				ORDER BY m.utc DESC
 			) r
 			LEFT JOIN " . self::TABLE_ROSTERUSERS . " u ON u.jid = r.jid
-			WHERE r.utc >= ? AND r.utc < ? " . ($jid ? "AND u.jid = '{$jid}'" : ''),
-			isset($prefs['timezone']) ? $prefs['timezone'] : date('e'),
+			WHERE ((r.utc >= ? AND r.utc < ?) OR (r.utc IS NULL AND r.utc2 >= ? AND r.utc2 < ?))" .
+			($jid ? "AND u.jid = '{$jid}'" : ''),
+
+			isset($prefs['timezone']) && $prefs['timezone'] != 'auto' ? $prefs['timezone'].'asdfasdf' : date('e').'asdfasdf',
 			$this->rc->get_user_email(),
+			$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24),
 			$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24)
 		);
 
@@ -199,8 +202,8 @@ class chat_history extends rcube_plugin
 			$table->add_row(array('id' => $message['id']));
 			unset($message['id']);
 
-			$t = strtotime($message['utc']);
-			$message['utc'] = date('H:i:s', strtotime($message['utc']));
+			$message['utc'] = date('H:i:s', strtotime($message['utc'] ?: $message['utc2']));
+			unset($message['utc2']);
 			$message['body'] = nl2br(htmlentities($message['body']));
 			if ($jid) {
 				unset($message['name']);
