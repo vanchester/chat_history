@@ -50,7 +50,6 @@ class chat_history extends rcube_plugin
 			'label'      => 'chat_history.chat_history',
 		), 'taskbar');
 
-		// add style for taskbar button (must be here) and Help UI
 		$this->include_stylesheet($this->local_skin_path()."/chat_history.css");
 
 		if ($this->rc->task == 'chat_history') {
@@ -192,7 +191,7 @@ class chat_history extends rcube_plugin
 			WHERE ((r.utc >= ? AND r.utc < ?) OR (r.utc IS NULL AND r.utc2 >= ? AND r.utc2 < ?))" .
 			($jid ? "AND u.jid = '{$jid}'" : ''),
 
-			isset($prefs['timezone']) && $prefs['timezone'] != 'auto' ? $prefs['timezone'].'asdfasdf' : date('e').'asdfasdf',
+			isset($prefs['timezone']) && $prefs['timezone'] != 'auto' ? $prefs['timezone'] : date('e'),
 			$this->rc->get_user_email(),
 			$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24),
 			$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24)

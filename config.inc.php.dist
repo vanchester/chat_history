@@ -18,6 +18,3 @@ $config['chathistory_db_persistent'] = false;
 
 // Log SQL queries to <log_dir>/sql or to syslog
 $config['chathistory_sql_debug'] = false;
-
-// Timezone of data in database
-$config['chathistory_timezone'] = 'Europe/Moscow';

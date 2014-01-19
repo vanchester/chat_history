@@ -2,7 +2,6 @@ if (window.rcmail) {
 	var settings = $.extend(rcmail.env.calendar_settings, rcmail.env.libcal_settings);
 
 	var datepicker_settings = {
-		// translate from fullcalendar format to datepicker format
 		dateFormat: settings['date_format'].replace(/M/g, 'm').replace(/mmmmm/, 'MM').replace(/mmm/, 'M').replace(/dddd/, 'DD').replace(/ddd/, 'D').replace(/yy/g, 'y'),
 		firstDay : settings['first_day'],
 		dayNamesMin: settings['days_short'],
@@ -63,7 +62,6 @@ $(document).ready(function () {
 				var diff = (target_kw - base_kw) * 7 * DAY_MS;
 				// select monday of the chosen calendar week
 				var date = new Date(base_date.getTime() - day_off * DAY_MS + diff);
-//				fc.fullCalendar('gotoDate', date).fullCalendar('setDate', date).fullCalendar('changeView', 'agendaWeek');
 				minical.datepicker('setDate', date);
 			}
 		});
