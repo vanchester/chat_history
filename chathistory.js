@@ -20,7 +20,7 @@ if (window.rcmail) {
 		$li = $('#contactlist-content li');
 		$li.on('click', function () {
 			show_chat_history({
-				'id': $(this).attr('id'),
+				'jid': $(this).attr('id'),
 				'date': $('#datepicker').datepicker({ dateFormat: 'yyyy-mm-dd' }).val()
 			});
 			$li.filter('.selected').removeClass('selected');
