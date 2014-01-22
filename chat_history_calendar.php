@@ -46,7 +46,6 @@ class chat_history_calendar
 		$this->rc = $plugin->getRcube();
 
 		$this->rc->output->set_env('calendar_settings', $this->get_settings());
-		$this->plugin->include_script('chathistory.js');
 
 		// include color picker
 		$this->plugin->include_script('jquery.miniColors.min.js');

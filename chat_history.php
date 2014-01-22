@@ -124,14 +124,20 @@ class chat_history extends rcube_plugin
 	{
 		$jid = isset($_POST['_jid']) ? $_POST['_jid'] : null;
 		$date = isset($_POST['_dt']) ? date('Y-m-d', strtotime($_POST['_dt'].' 00:00:00')) : null;
+		$search = isset($_POST['_q']) ? $_POST['_q'] : null;
 
-		$out = $this->messages($date, $jid);
-		$this->rc->output->command('plugin.update_history', array('content' => $out));
+		$out = $this->messages($date, $jid, $search);
+		$this->rc->output->command('plugin.update_history', array(
+			'content' => $out,
+			'jid' => $jid,
+			'date' => $date,
+			'search' => $search
+		));
 	}
 
-	public function messages($date = null, $jid = null)
+	public function messages($date = null, $jid = null, $search = null)
 	{
-		if (!$date || is_array($date)) {
+		if ((!$date || is_array($date)) && !$search) {
 			$date = date('Y-m-d');
 		}
 
@@ -154,7 +160,7 @@ class chat_history extends rcube_plugin
 			),
 			'date' => array(
 				'className' => '',
-				'html' => $this->gettext('chat_history.time'),
+				'html' => $this->gettext($search ? 'chat_history.date' : 'chat_history.time'),
 			),
 			'user' => array(
 				'className' => '',
@@ -175,8 +181,9 @@ class chat_history extends rcube_plugin
 		}
 
 		$prefs = $this->rc->user->get_prefs();
-		$messagesQuery = $this->get_dbh()->query(
-			"SELECT
+		$timezone = isset($prefs['timezone']) && $prefs['timezone'] != 'auto' ? $prefs['timezone'] : date('e');
+
+		$query = "SELECT
 				r.id, r.direction, r.utc, r.utc2, CONCAT(u.nick, ' ', r.jid) name, r.body
 			FROM (
 				SELECT
@@ -188,22 +195,43 @@ class chat_history extends rcube_plugin
 				ORDER BY m.utc DESC
 			) r
 			LEFT JOIN " . self::TABLE_ROSTERUSERS . " u ON u.jid = r.jid
-			WHERE ((r.utc >= ? AND r.utc < ?) OR (r.utc IS NULL AND r.utc2 >= ? AND r.utc2 < ?))" .
-			($jid ? "AND u.jid = '{$jid}'" : ''),
+			WHERE 1 = 1";
 
-			isset($prefs['timezone']) && $prefs['timezone'] != 'auto' ? $prefs['timezone'] : date('e'),
-			$this->rc->get_user_email(),
-			$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24),
-			$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24)
-		);
+		if ($jid) {
+			$query .= " AND u.jid = '{$jid}'";
+		}
+
+		if ($search) {
+			$query .= " AND r.body LIKE ?";
+			$messagesQuery = $this->get_dbh()->query(
+				$query,
+
+				$timezone,
+				$this->rc->get_user_email(),
+				'%' . $search . '%'
+			);
+		} else {
+			$query .= " AND ((r.utc >= ? AND r.utc < ?) OR (r.utc IS NULL AND r.utc2 >= ? AND r.utc2 < ?))";
+			$messagesQuery = $this->get_dbh()->query(
+				$query,
+
+				$timezone,
+				$this->rc->get_user_email(),
+				$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24),
+				$date, date('Y-m-d', strtotime($date.' 00:00:00') + 60*60*24)
+			);
+		}
 
 		while ($message = $this->get_dbh()->fetch_assoc($messagesQuery)) {
 			$table->add_row(array('id' => $message['id']));
 			unset($message['id']);
 
-			$message['utc'] = date('H:i:s', strtotime($message['utc'] ?: $message['utc2']));
+			$message['utc'] = date($search ? 'Y-m-d H:i:s' : 'H:i:s', strtotime($message['utc'] ?: $message['utc2']));
 			unset($message['utc2']);
 			$message['body'] = nl2br(htmlentities($message['body']));
+			if ($search) {
+				$message['body'] = preg_replace("/({$search})/iu", '<span class="search-text">\\1</span>', $message['body']);
+			}
 			if ($jid) {
 				unset($message['name']);
 			}

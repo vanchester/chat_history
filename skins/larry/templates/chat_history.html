@@ -26,6 +26,15 @@
 	<!-- end addressview-left -->
 
 	<div id="chathistory-right">
+		<!-- search box -->
+		<div id="quicksearchbar" class="searchbox">
+			<form id="qicksearchform" style="display:inline" method="get">
+				<input name="_q" id="quicksearchbox" type="text" class="chathistory">
+			</form>
+			<roundcube:button command="reset-search" id="searchreset" class="iconbutton reset" title="resetsearch"
+							  content=" "/>
+		</div>
+
 		<div id="chathistory-top" class="uibox fullheight">
 			<div class="messagelistcontainer">
 				<roundcube:object name="chathistorymessages" id="chathistory-messages" style="width:100%; height:100%" />
