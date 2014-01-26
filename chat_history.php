@@ -232,7 +232,12 @@ class chat_history extends rcube_plugin
 			if ($search) {
 				$message['body'] = preg_replace("/({$search})/iu", '<span class="search-text">\\1</span>', $message['body']);
 			}
-			if ($jid) {
+			$message['body'] = preg_replace(
+				'/((?:http[s]{0,1}|ftp):\/\/[\w\d\-\?\=\#\_\.\/]+)/',
+				'<a href="\\1" target="_blank">\\1</a>',
+				$message['body']
+			);
+            if ($jid) {
 				unset($message['name']);
 			}
 
